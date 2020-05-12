@@ -20,7 +20,6 @@ function TestController:Start()
 		print("New Property: ", New, "Old Property: ", Old);
 	end)
 	self.Enabled = true;
-	self:Log("Hello World!");
 end
 
 
