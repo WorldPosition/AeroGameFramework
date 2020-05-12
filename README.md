@@ -1,5 +1,5 @@
 ![Logo](/imgs/logo_github_readme.png)
-
+(note: this is a fork of AeroGameFramework! I've added some of my own useful functions. Thanks to Scriptos for helping.)
 # AeroGameFramework
 A powerful game framework for the Roblox platform.
 
