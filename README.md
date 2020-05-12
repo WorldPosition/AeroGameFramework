@@ -8,8 +8,34 @@ AeroGameFramework is a Roblox game framework that makes development easy and fun
 # Documentation
 Visit the [documentation site](https://sleitnick.github.io/AeroGameFramework).
 
-# Video Tutorial
-Visit the [AGF Tutorial](https://www.youtube.com/watch?v=0T-slvWfYkc&list=PLk3R4TM3pnqvde1cqOIH_bGnCWwMKDqKL) playlist.
+# Custom Functions by WorldPosition
+
+Here is an example showing :GetPropertyChangedEvent(PropertyName) and :RegisterProperty(Name)
+```lua
+local TestController = {}
+
+
+function TestController:Start()
+	self:GetPropertyChangedEvent("Enabled"):Connect(function(New, Old)
+		print("New Property: ", New, "Old Property: ", Old);
+	end)
+	self.Enabled = true;
+	self:Log("Hello World!");
+end
+
+
+function TestController:Init()
+	self:RegisterProperty("Enabled");
+end
+
+
+return TestController
+```
+
+I've also added a :Log(text) function which will print the text, while also displaying the name of the script that called it.
+```lua
+self:Log("Hello World!");
+```
 
 # Example
 
@@ -51,8 +77,3 @@ return MyService
 ```
 
 These are complete code examples. They could be put into the framework and work as-is.
-
-# Support
-
-Support AGF by [buying me a coffee](https://www.buymeacoffee.com/sleitnick) and keeping me energized to keep up the work on this project! Any support is very much appreciated.
-<link href="https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext" rel="stylesheet"><a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/sleitnick"><img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:15px;font-size:19px !important;">Buy me a coffee</span></a>
