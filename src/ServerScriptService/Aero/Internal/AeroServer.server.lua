@@ -1,7 +1,7 @@
 -- Aero Server
 -- Stephen Leitnick
 -- July 21, 2017
-
+-- Modified by WorldPosition
 
 
 local AeroServer = {
@@ -10,7 +10,30 @@ local AeroServer = {
 	Shared = {};
 }
 
-local mt = {__index = AeroServer}
+local mt = {}
+
+mt.__index = function(self, index)
+	if self._properties[index] then
+		return self._properties[index];
+	else
+		return AeroServer[index];
+	end
+end
+
+mt.__newindex = function(self, k, v)
+	local property = self._properties[k];
+	if property ~= nil then -- set the new _property and fire the event.
+		if v == nil then
+			v = false;
+		end
+		rawset(self._properties, k, v);
+		if self._propertyevents[k] then
+			self._propertyevents[k]:Fire(v, property); -- fire the new property (v) and the old one (property)
+		end
+	else
+		rawset(self, k, v);
+	end
+end
 
 local servicesFolder = game:GetService("ServerStorage").Aero.Services
 local modulesFolder = game:GetService("ServerStorage").Aero.Modules
@@ -36,6 +59,26 @@ local function PreventMethodCache()
 	error("Cannot mark method as cachable after Init method")
 end
 
+-- Custom Function: Print text and describe what script it came from.
+function AeroServer:Log(Text)
+	local scrpt = getfenv(2).script;
+	print("[" .. scrpt.Name .. "]: " .. Text);
+end
+
+-- Custom Function: Get the event for a registered property.
+function AeroServer:GetPropertyChangedEvent(PropertyName)
+	if self._propertyevents[PropertyName] then
+		return self._propertyevents[PropertyName];
+	end
+end
+
+-- Custom function: Create a new property with an event for when it is changed.
+function AeroServer:RegisterProperty(PropertyName, DefaultValue)
+	if DefaultValue == nil then DefaultValue = false end;
+	self._propertyevents[PropertyName] = self.Shared.Event.new();
+	rawset(self._properties, PropertyName, DefaultValue);
+	return self._propertyevents[PropertyName];
+end
 
 function AeroServer:RegisterEvent(eventName)
 	local event = self.Shared.Event.new()
@@ -118,6 +161,8 @@ end
 function AeroServer:WrapModule(tbl)
 	assert(type(tbl) == "table", "Expected table for argument")
 	tbl._events = {}
+	tbl._properties = {};
+	tbl._propertyevents = {};
 	setmetatable(tbl, mt)
 	if (type(tbl.Init) == "function" and not tbl.__aeroPreventInit) then
 		tbl:Init()
@@ -179,6 +224,9 @@ local function LoadService(module, servicesTbl, parentFolder)
 		service.Client = {}
 	end
 	service.Client.Server = service
+	
+	service._properties = {};
+	service._propertyevents = {};
 	
 	setmetatable(service, mt)
 	
